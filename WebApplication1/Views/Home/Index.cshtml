@@ -1,0 +1,25 @@
+﻿@page "/"
+@using System.Globalization
+@using AntDesign
+
+<AntDesign.Select TItem="Person"
+                  TItemValue="string"
+                  DataSource="Model.Persons"
+@bind-Value="@Model.SelectedValue"
+                  LabelName="@nameof(Person.Name)"
+                  ValueName="@nameof(Person.Value)"
+                  Placeholder="Select a person"
+                  DefaultActiveFirstOption="false"
+                  EnableSearch
+                  OnBlur="@OnBlur"
+                  OnFocus="@OnFocus"
+                  OnSelectedItemChanged="@OnSelectedItemChangedHandler"
+                  OnSearch="@OnSearch"
+                  FilterExpression="(item, searchValue) => CultureInfo.CurrentCulture.CompareInfo.IndexOf(item.Label, searchValue, CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreCase) >= 0">
+</AntDesign.Select>
+<br />
+<br />
+<p>
+    Selected Value: @Model.SelectedValue <br />
+    Selected Item Name: @Model.SelectedItem?.Name
+</p>
