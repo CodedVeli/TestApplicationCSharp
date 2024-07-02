@@ -1,0 +1,12 @@
+﻿@model WebApplication1.Models.IndexModel
+
+<div>
+    <label for="personList">Persons:</label>
+    <select id="personList" onchange="onSelectedItemChangedHandler(this.value)">
+        <option value="">Select a person</option>
+        @foreach (var person in Model.Persons)
+        {
+            <option value="@person.Value">@person.Name</option>
+        }
+    </select>
+</div>
