@@ -1,4 +1,4 @@
-﻿@page "/"
+@*@page "/"
 @using System.Globalization
 @using AntDesign
 
@@ -23,3 +23,124 @@
     Selected Value: @Model.SelectedValue <br />
     Selected Item Name: @Model.SelectedItem?.Name
 </p>
+@model WebApplication1.Models.IndexModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Home Page</h1>
+
+<div>
+    <select id="select-control"
+            onchange="onSelectedItemChangedHandler(this.value)"
+            onblur="onBlurHandler()"
+            onfocus="onFocusHandler()"
+            style="width: 200px;">
+        @foreach (var person in Model.Persons)
+        {
+            <option value="@person.Value">@person.Name</option>
+        }
+    </select>
+</div>
+
+<script>
+    function onBlurHandler() {
+        console.log("blur");
+    }
+
+    function onFocusHandler() {
+        console.log("focus");
+    }
+
+    function onSelectedItemChangedHandler(value) {
+        console.log(`selected: ${value}`);
+        // Update the model property here
+        document.getElementById("selected-value").value = value;
+    }
+
+    function onSearchHandler(value) {
+        console.log(`search: ${value}`);
+    }
+</script>
+
+<input type="hidden" id="selected-value" name="SelectedValue" value="@Model.SelectedValue" />*@
+
+       @model WebApplication1.Models.IndexModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <label for="personSearch">Search:</label>
+    <input type="text" id="personSearch" onblur="onBlurHandler()" onfocus="onFocusHandler()" oninput="onSearchHandler(this.value)" />
+</div>
+
+<div id="person-list-container">
+    @Html.Partial("_PersonList", Model)
+</div>
+
+<p>
+    Selected Value: <span id="selected-value-display">@Model.SelectedValue</span> <br />
+    Selected Item Name: <span id="selected-item-name">@Model.SelectedItem?.Name</span>
+</p>
+
+<script>
+    function onBlurHandler() {
+        console.log("blur");
+        $.ajax({
+            type: "POST",
+            url: "/Home/OnBlur",
+            success: function () {
+                console.log("Blur handler called successfully");
+            }
+        });
+    }
+
+    function onFocusHandler() {
+        console.log("focus");
+        $.ajax({
+            type: "POST",
+            url: "/Home/OnFocus",
+            success: function () {
+                console.log("Focus handler called successfully");
+            }
+        });
+    }
+
+    function onSelectedItemChangedHandler(value) {
+        console.log(`selected: ${value}`);
+        // Update selected value display
+        document.getElementById("selected-value-display").textContent = value;
+
+        // Find selected person name from the options
+        var selectElement = document.getElementById("personList");
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        document.getElementById("selected-item-name").textContent = selectedOption.text;
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/OnSelectedItemChangedHandler",
+            data: { value: value },
+            success: function () {
+                console.log("Selected item changed handler called successfully");
+            }
+        });
+    }
+
+    function onSearchHandler(value) {
+        console.log(`search: ${value}`);
+        $.ajax({
+            type: "POST",
+            url: "/Home/OnSearch",
+            data: { value: value },
+            success: function (response) {
+                console.log("Search handler called successfully");
+                $("#person-list-container").html(response);
+            }
+        });
+    }
+</script>
