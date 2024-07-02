@@ -1,57 +1,64 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using WebApplication1.Models;
 
-namespace MyMvcApp.Controllers
+namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            var model = new IndexModel();
-            model.Persons = new List<Person>
+            var model = new IndexModel
             {
-                new Person { Value = "jack", Name = "Jack" },
-                new Person { Value = "lucy", Name = "Lucy" },
-                new Person { Value = "tom" , Name = "Tom" },
-                new Person { Value = "hernan" , Name = "Hern�n" },
-                new Person { Value = "marino" , Name = "Marino" },
+                Persons = new List<Person>
+                {
+                    new Person { Value = "jack", Name = "Jack" },
+                    new Person { Value = "lucy", Name = "Lucy" },
+                    new Person { Value = "tom", Name = "Tom" },
+                    new Person { Value = "hernan", Name = "Hernán" },
+                    new Person { Value = "marino", Name = "Marino" },
+                }
             };
             return View(model);
         }
 
+        [HttpPost]
         public void OnBlur()
         {
             Console.WriteLine("blur");
         }
 
+        [HttpPost]
         public void OnFocus()
         {
             Console.WriteLine("focus");
         }
 
-        public void OnSelectedItemChangedHandler(Person value)
+        [HttpPost]
+        public void OnSelectedItemChangedHandler(string value)
         {
-            Console.WriteLine($"selected: {value?.Name}");
+            var person = new Person { Value = value }; // Adjust this as needed to find the correct person
+            Console.WriteLine($"selected: {person?.Name}");
         }
 
-        public void OnSearch(string value)
+        [HttpPost]
+        public IActionResult OnSearch(string value)
         {
-            Console.WriteLine($"search: {value}");
+            var model = new IndexModel
+            {
+                Persons = Persons.Where(p => p.Name.Contains(value, StringComparison.OrdinalIgnoreCase)).ToList()
+            };
+            return PartialView("_PersonList", model);
         }
-    }
 
-    public class IndexModel
-    {
-        public List<Person> Persons { get; set; }
-        public string SelectedValue { get; set; }
-        public Person SelectedItem { get; set; }
-    }
-
-    public class Person
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
+        private List<Person> Persons => new List<Person>
+        {
+            new Person { Value = "jack", Name = "Jack" },
+            new Person { Value = "lucy", Name = "Lucy" },
+            new Person { Value = "tom", Name = "Tom" },
+            new Person { Value = "hernan", Name = "Hernán" },
+            new Person { Value = "marino", Name = "Marino" },
+        };
     }
 }
